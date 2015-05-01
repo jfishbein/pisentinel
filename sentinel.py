@@ -31,6 +31,8 @@ import shutil
 import math
 import threading
 from optparse import OptionParser
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
 # globals
 FNULL = open(os.devnull, 'w')
