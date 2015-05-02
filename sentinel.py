@@ -447,15 +447,9 @@ class Camera():
         self.opts = opts
         self.current_image_viewer = None  # image viewer not yet launched
 
-        self.webcam = cv2.VideoCapture(int(self.opts.camera))  # open a channel to our camera
-        if(not self.webcam.isOpened()):  # return error if unable to connect to hardware
-            raise ValueError('Error connecting to specified camera')
-
-        #if supported by camera set image width and height to desired values
-        img_w, img_h = map(int, self.opts.image_dimensions.split('x'))
-        self.resolution_set = self.webcam.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH,img_w)
-        self.resolution_set =  self.resolution_set  and self.webcam.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT,img_h)
-
+        # Initialize RasPi Camera
+        self.webcam = PiCamera()
+        self.rawCapture = PiRGBArray(camera)
 
         # initialize classifier with training set of faces
         self.face_filter = cv2.CascadeClassifier(self.opts.haar_file)
@@ -474,24 +468,19 @@ class Camera():
         if sys.platform == 'linux2' or sys.platform == 'darwin':
             if self.current_image_viewer:
                 subprocess.call(['killall', self.current_image_viewer], stdout=FNULL, stderr=FNULL)
-        else:
-            self.webcam.release()
 
 
     # runs to grab latest frames from camera
     def grab_frames(self):
-            while(1): # loop until process is shut down
-                if not self.webcam.grab():
+            for frame in self.webcam.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):: # loop until process is shut down
+                image = frame.array
+                if not image:
                     raise ValueError('frame grab failed')
-                time.sleep(.015)
-                retval, most_recent_frame = self.webcam.retrieve(channel=0)
-                if not retval:
-                    raise ValueError('frame capture failed')
                 self.currentFrameLock.acquire()
-                self.current_frame = most_recent_frame
+                self.current_frame = image
                 self.new_frame_available = True
                 self.currentFrameLock.release()
-                time.sleep(.015)
+                time.sleep(.030)
 
 
     # runs facial recognition on our previously captured image and returns
