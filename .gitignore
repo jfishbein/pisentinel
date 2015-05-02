@@ -1,2 +1,4 @@
 *.jp*g
 *.bmp
+.idea*
+.idea/*
