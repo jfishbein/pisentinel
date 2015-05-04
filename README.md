@@ -8,9 +8,6 @@ Impress your friends! Intimidate your enemies!
 1.1\.  [Video Demonstration](#videodemonstration)  
 2\.  [Hardware Requirements](#hardwarerequirements)  
 3\.  [Software Requirements and Installation](#softwarerequirementsandinstallation)  
-3.1\.  [Linux](#linux)  
-3.2\.  [Windows](#windows)  
-3.3\.  [Mac OS X](#macosx)  
 4\.  [Usage](#usage)  
 
 <a name="howitworks"></a>
