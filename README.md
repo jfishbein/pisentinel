@@ -1,10 +1,8 @@
-# Sentinel
+# PiSentinel
 
-**Sentinel** is a cross-platform USB missile launcher face-tracking solution. It will attempt to track faces, continually point the missile launcher at the clearest face, and optionally shoot foam missiles.
+**PiSentinel** is a Raspberry Pi specific fork of Sentinel (https://github.com/AlexNisnevich/sentinel), a USB missile launcher face-tracking solution. It will attempt to track faces, continually point the missile launcher at the clearest face, and optionally shoot foam missiles.
 
 Impress your friends! Intimidate your enemies!
-
-![Demonstration of Sentinel](https://raw.github.com/AlexNisnevich/sentinel/master/demonstration.jpg)
 
 1\.  [How it Works](#howitworks)  
 1.1\.  [Video Demonstration](#videodemonstration)  
@@ -19,13 +17,13 @@ Impress your friends! Intimidate your enemies!
 
 ## 1\. How it Works
 
-I wrote [an article](http://alex.nisnevich.com/blog/2013/02/19/face_tracking_with_open_cv_and_a_usb_missile_launcher.html) about how we implemented Sentinel using OpenCV.
+Alex Nisnevich wrote [an article](http://alex.nisnevich.com/blog/2013/02/19/face_tracking_with_open_cv_and_a_usb_missile_launcher.html) about how the original Sentinel was implemented using OpenCV.
 
 <a name="videodemonstration"></a>
 
 ### 1.1\. Video Demonstration
 
-Here's a quick video that we put together due to popular demand. Sentinel is usually significantly faster at homing in on the target, but our computers were bogged down while we were recording the video.
+Here's a quick video of the original Sentinel.
 
 [![Link to Youtube video](images/youtube/L2It-kK0yfM.png)](http://www.youtube.com/watch?v=L2It-kK0yfM)
 
@@ -33,16 +31,14 @@ Here's a quick video that we put together due to popular demand. Sentinel is usu
 
 ## 2\. Hardware Requirements
 - **[Dream Cheeky brand USB missile launcher](http://www.amazon.com/Dream-Cheeky-908-Electronic-Reference/dp/B004SAYO46)** (tested with the Thunder model, should also work with the Storm model)
-- small **webcam** attached to USB missile launcher (tested with Logitech C270)
+- [Raspberry Pi] (https://www.raspberrypi.org) running linux (the code was developed and tested on a Raspberry Pi B running Raspbian)
+- [Raspberry Pi camera module] (https://www.raspberrypi.org/products/camera-module/)
 
 <a name="softwarerequirementsandinstallation"></a>
 
 ## 3\. Software Requirements and Installation
 
-<a name="linux"></a>
-
-### 3.1\. Linux
-If you're on Ubuntu 12.04+ or Debian (tested with Linux Mint Debian), you can simply run the included installation script:
+If you're running on Raspbian 3.18+, you can simply run the included installation script:
 ```
 > sudo install/ubuntu_debian.sh
 ```
@@ -50,61 +46,25 @@ If you're on Ubuntu 12.04+ or Debian (tested with Linux Mint Debian), you can si
 Otherwise (or if the script doesn't work for you), install the following dependencies:
 
 - **Python** 2.7, 32-bit
-- **libusb** 1.0 (in Ubuntu/Debian, `sudo apt-get install libusb-dev`)
+- **libusb** 1.0 (in Raspbian, `sudo apt-get install libusb-dev`)
 - **PyUSB** 1.0 (https://github.com/walac/pyusb)
 - **OpenCV** 2.3+ with Python bindings
-  - In Ubuntu 12.04+ or latest Debian, `sudo apt-get install python-opencv` will install the correct version
-  - In older versions of Ubuntu, you can follow [these instructions](http://jayrambhia.wordpress.com/2012/06/20/install-opencv-2-4-in-ubuntu-12-04-precise-pangolin/) or use [this bash script](https://github.com/jayrambhia/Install-OpenCV/blob/master/Ubuntu/2.4/opencv2_4_3.sh) (tested with 11.10)
-  - In ArchLinux, `pacman -S python2-numpy` then `pacman -S opencv 2.4.0_a-4`
-- **streamer** (in Ubuntu/Debian, `sudo apt-get install streamer`)
-- **ImageMagick** (in Ubuntu/Debian, `sudo apt-get install imagemagick`)
+  - In Raspbian, `sudo apt-get install python-opencv` will install the correct version
+  - Alternatively, you can follow [these instructions](http://www.pyimagesearch.com/2015/02/23/install-opencv-and-python-on-your-raspberry-pi-2-and-b/)
+- **streamer** (in Raspbian, `sudo apt-get install streamer`)
+- **ImageMagick** (in Raspbian, `sudo apt-get install imagemagick`)
+- **picamera** (http://picamera.readthedocs.org/en/release-1.9/index.html)
 
-After installing all of the software requirements, you can run Sentinel:
+After installing all of the software requirements, you can run PiSentinel:
 ```
-> sudo ./sentinel.py
-```
-
-<a name="windows"></a>
-
-### 3.2\. Windows
-
-Install the following dependencies:
-
-- **Python** 2.7, 32-bit
-- **libusb-win32** (http://sourceforge.net/projects/libusb-win32/files/)
-   - After installing, plug in USB missile launcher, launch *[libusb path]\bin\inf-wizard.exe*, and create and run an INF driver file for the USB rocket launcher using the wizard
-- **PyUSB** 1.0 (https://github.com/walac/pyusb)
-- **NumPy** (http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy)
-- **OpenCV** 2.3+ with Python bindings (http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.3.1/OpenCV-2.3.1-win-superpack.exe/download)
-   - After installing, copy the contents of *[opencv path]\build\python\2.7* (it should contain *cv.py* and *cv2.pyd*) to *C:\Python27\Lib\site-packages*
-
-After installing all of the software requirements, you can run Sentinel from Python IDLE or from the command line:
-```
-> C:\Python27\python sentinel.py
+> sudo ./pisentinel.py
 ```
 
-<a name="macosx"></a>
-
-### 3.3\. Mac OS X
-
-If you have [Homebrew](http://mxcl.github.com/homebrew/), you can simply run the included installation script:
+Alternatively, if you do not want to run PiSentinel as root, you can set a udev rule for the USB missle launcher to allow other users to have access to the launcher. To do this add a rules file to `/etc/udev/rules.d` with the following line
 ```
-> sudo install/mac_osx.sh
+SUBSYSTEM=="usb", ATTRS{idVendor}=="2123", ATTRS{idProduct}=="1010", MODE="0666", GROUP="plugdev"
 ```
-
-Otherwise (or if the script doesn't work for you), install the following dependencies:
-
-- **Python** 2.7, 32-bit (if not pre-installed)
-- **libusb** 1.0 (`sudo port install libusb` or `sudo brew install libusb-devel +universal`)
-- **PyUSB** 1.0 (https://github.com/walac/pyusb)
-- **NumPy** (`pip install numpy`)
-- **OpenCV** 2.3+ with Python bindings (`sudo port -v install opencv +python27` or `sudo brew install opencv`)
-
-After installing all of the software requirements, you can run Sentinel:
-```
-> sudo python ./sentinel.py
-```
-
+and replace `ATTRS{idVendor}` and `ATTRS{idProduct}` with the correct values from `lsusb`.
 <a name="usage"></a>
 
 ## 4\. Usage
