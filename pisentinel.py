@@ -577,8 +577,6 @@ class Camera():
             cv2.waitKey(2)
 
 if __name__ == '__main__':
-    if (sys.platform == 'linux2' or sys.platform == 'darwin') and not os.geteuid() == 0:
-        sys.exit("Script must be run as root.")
 
     # command-line options
     parser = OptionParser()
