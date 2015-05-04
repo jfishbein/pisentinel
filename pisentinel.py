@@ -449,7 +449,7 @@ class Camera():
 
         # Initialize RasPi Camera
         self.webcam = PiCamera()
-        self.rawCapture = PiRGBArray(camera)
+        self.rawCapture = PiRGBArray(self.webcam)
 
         # initialize classifier with training set of faces
         self.face_filter = cv2.CascadeClassifier(self.opts.haar_file)
@@ -472,15 +472,16 @@ class Camera():
 
     # runs to grab latest frames from camera
     def grab_frames(self):
-            for frame in self.webcam.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):: # loop until process is shut down
+            for frame in self.webcam.capture_continuous(self.rawCapture, format="bgr", use_video_port=True): # loop until process is shut down
                 image = frame.array
-                if not image:
+                if not image.any():
                     raise ValueError('frame grab failed')
                 self.currentFrameLock.acquire()
                 self.current_frame = image
                 self.new_frame_available = True
                 self.currentFrameLock.release()
                 time.sleep(.030)
+		frame.truncate(0)
 
 
     # runs facial recognition on our previously captured image and returns
@@ -509,8 +510,8 @@ class Camera():
         self.currentFrameLock.release()
 
         img_w, img_h = map(int, self.opts.image_dimensions.split('x'))
-        if(not self.resolution_set):
-            img = cv2.resize(img, (img_w, img_h))
+        #if(not self.resolution_set):
+        img = cv2.resize(img, (img_w, img_h))
 
 
         #convert to grayscale since haar operates on grayscale images anyways
