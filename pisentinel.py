@@ -477,7 +477,7 @@ class Camera():
                 if not image.any():
                     raise ValueError('frame grab failed')
                 self.currentFrameLock.acquire()
-                self.current_frame = image
+                self.current_frame = image.copy()
                 self.new_frame_available = True
                 self.currentFrameLock.release()
                 time.sleep(.030)
@@ -607,8 +607,10 @@ if __name__ == '__main__':
 
     # additional options
     opts = AttributeDict(vars(opts))  # converting opts to an AttributeDict so we can add extra options
-    opts.haar_file = 'haarcascade_frontalface_default.xml'
-    opts.haar_profile_file = 'haarcascade_profileface.xml'
+    #opts.haar_file = 'haarcascade_frontalface_default.xml'
+    opts.haar_file = 'lbpcascade_frontalface.xml'
+    #opts.haar_profile_file = 'haarcascade_profileface.xml'
+    #opts.haar_profile_file = 'lbpcascade_profileface.xml'
 
     turret = Turret(opts)
     camera = Camera(opts)
